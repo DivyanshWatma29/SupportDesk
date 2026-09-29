@@ -5,6 +5,8 @@ on:
     - cron: "*/10 * * * *"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   keep-api-awake:
     runs-on: ubuntu-latest

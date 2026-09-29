@@ -20,7 +20,7 @@ services:
         value: DemoAgent2026!
 
   # Frontend React/Vite Static Site
-  - type: static
+  - type: static_site
     name: supportdesk-frontend
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist

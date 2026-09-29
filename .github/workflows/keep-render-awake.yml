@@ -1,0 +1,13 @@
+name: Keep Render API Warm
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  keep-api-awake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send health check to keep Render API warm
+        run: curl --fail --show-error --silent --connect-timeout 10 --max-time 30 "https://supportdesk-api-3evm.onrender.com/api/health"

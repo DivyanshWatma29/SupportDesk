@@ -70,7 +70,7 @@ class TicketServiceTest {
                 "Screen Flicker Issue", "Laptop screen flickers continuously.", Priority.HIGH
         ));
 
-        assertEquals("HD-00042", response.ticketNumber());
+        assertEquals("SD-00042", response.ticketNumber());
         assertEquals("Screen Flicker Issue", response.title());
         assertEquals("IT Support", response.departmentName());
         verify(ticketRepository, times(2)).save(any(Ticket.class));
@@ -81,7 +81,7 @@ class TicketServiceTest {
     void updatesTicketStatusAndLogsAuditTrail() {
         Ticket ticket = new Ticket();
         ticket.setId(42L);
-        ticket.setTicketNumber("HD-00042");
+        ticket.setTicketNumber("SD-00042");
         ticket.setTitle("Network slow");
         ticket.setDescription("VPN disconnection issues.");
         ticket.setPriority(Priority.MEDIUM);
@@ -107,7 +107,7 @@ class TicketServiceTest {
     void tracksTicketByNumberWithAuditHistory() {
         Ticket ticket = new Ticket();
         ticket.setId(42L);
-        ticket.setTicketNumber("HD-00042");
+        ticket.setTicketNumber("SD-00042");
         ticket.setTitle("Wi-Fi down");
         ticket.setDescription("Cannot connect to office Wi-Fi.");
         ticket.setPriority(Priority.HIGH);
@@ -117,13 +117,13 @@ class TicketServiceTest {
 
         AuditLog log = new AuditLog(ticket, requester, "CREATED", null, "OPEN", "Submitted");
 
-        when(ticketRepository.findByTicketNumberWithDetails("HD-00042")).thenReturn(Optional.of(ticket));
+        when(ticketRepository.findByTicketNumberWithDetails("SD-00042")).thenReturn(Optional.of(ticket));
         when(auditLogRepository.findByTicketIdWithUser(42L)).thenReturn(List.of(log));
 
-        TicketDetailResponse detail = ticketService.getTicketByNumber("HD-00042");
+        TicketDetailResponse detail = ticketService.getTicketByNumber("SD-00042");
 
         assertNotNull(detail);
-        assertEquals("HD-00042", detail.ticket().ticketNumber());
+        assertEquals("SD-00042", detail.ticket().ticketNumber());
         assertEquals(1, detail.timeline().size());
         assertEquals("CREATED", detail.timeline().get(0).action());
     }

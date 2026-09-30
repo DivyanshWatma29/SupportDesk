@@ -17,10 +17,10 @@ const statuses = ["OPEN", "IN_PROGRESS", "RESOLVED"];
 
 const DEFAULT_DEPARTMENTS = [
   { id: 1, name: "IT Support", code: "IT" },
-  { id: 2, name: "Human Resources", code: "HR" },
-  { id: 3, name: "Finance", code: "FIN" },
-  { id: 4, name: "Facilities", code: "FAC" },
-  { id: 5, name: "Security", code: "SEC" }
+  { id: 2, name: "Staff Support (HR)", code: "HR" },
+  { id: 3, name: "Fees & Finance", code: "FIN" },
+  { id: 4, name: "Campus Facilities", code: "FAC" },
+  { id: 5, name: "ID Cards & Access", code: "SEC" }
 ];
 
 function readable(value) {
@@ -87,11 +87,11 @@ function TicketForm({ departments = DEFAULT_DEPARTMENTS }) {
   return (
     <section className="content-grid">
       <div className="intro-card">
-        <p className="eyebrow">Service Desk</p>
-        <h2>Report an IT or Workplace Issue</h2>
-        <p>Fill in this form to report a problem to the correct support team.</p>
+        <p className="eyebrow">Campus Service Desk</p>
+        <h2>Report an IT or Campus Issue</h2>
+        <p>Students and staff can report an IT or campus problem here. It is sent to the right department.</p>
         <div className="support-note">
-          <strong>Project note:</strong> Your ticket is saved with its department, priority, and current status.
+          <strong>No login needed:</strong> Your ticket is saved with its department, priority, and status. Keep the ticket number to track it.
         </div>
       </div>
 
@@ -206,7 +206,7 @@ function TrackTicketTab() {
   return (
     <section className="track-section">
       <div className="track-header">
-        <p className="eyebrow">Employee Portal</p>
+        <p className="eyebrow">Requester Portal</p>
         <h2>Track Your Support Ticket</h2>
         <p className="muted">Enter your ticket number to check its current status and update history.</p>
       </div>
@@ -686,7 +686,7 @@ export default function App() {
           <span>S</span>
           <div>
             <strong>SupportDesk</strong>
-            <small>Student Support Ticket System</small>
+            <small>Campus IT & Student Support Desk</small>
           </div>
         </div>
 

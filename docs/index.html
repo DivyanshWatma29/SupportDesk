@@ -1,52 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SupportDesk - Live Demo</title>
-  <style>
-    :root { --ink: #17212b; --muted: #63717d; --line: #d8e0e5; --bg: #f4f7f8; --panel: #fff; --green: #176b5f; --orange: #a75d00; }
-    * { box-sizing: border-box; } body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: var(--ink); }
-    header { background: var(--ink); color: #fff; padding: 28px 20px; } .wrap { max-width: 1050px; margin: 0 auto; }
-    h1 { margin: 0; font-size: 28px; } header p { margin: 7px 0 0; color: #d7e3e6; } main { padding: 24px 20px 42px; }
-    .note { color: var(--muted); font-size: 14px; margin: 0 0 18px; } .grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
-    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 18px; } h2 { margin: 0 0 16px; font-size: 19px; }
-    label { display: block; margin: 11px 0 5px; font-size: 13px; font-weight: 700; } input, select, textarea { width: 100%; padding: 9px; border: 1px solid #bdc8cf; border-radius: 4px; font: inherit; } textarea { min-height: 76px; resize: vertical; }
-    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; } button { border: 0; border-radius: 4px; background: var(--green); color: #fff; cursor: pointer; padding: 9px 12px; font: inherit; } button.secondary { color: var(--ink); background: #e7edf0; }
-    .status { min-height: 20px; color: var(--muted); font-size: 13px; margin: 14px 0 0; } table { width: 100%; border-collapse: collapse; font-size: 14px; } th, td { padding: 11px 7px; text-align: left; border-bottom: 1px solid var(--line); } th { color: var(--muted); font-size: 11px; text-transform: uppercase; } tr { cursor: pointer; } tr:hover { background: #eef8f6; }
-    .open { color: var(--orange); font-weight: 700; } .in-progress { color: #235b9c; font-weight: 700; } .resolved { color: var(--green); font-weight: 700; } footer { border-top: 1px solid var(--line); padding: 18px 20px; color: var(--muted); font-size: 13px; } footer a { color: var(--green); }
-    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .card { overflow-x: auto; } h1 { font-size: 24px; } }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="refresh" content="0; url=https://supportdesk-frontend-uory.onrender.com/" />
+<link rel="canonical" href="https://supportdesk-frontend-uory.onrender.com/" />
+<title>SupportDesk - Live Demo</title>
 </head>
-<body>
-  <header><div class="wrap"><h1>SupportDesk</h1><p>Live demonstration of a student support ticket management project.</p></div></header>
-  <main class="wrap">
-    <p class="note">Raise a ticket, select it from the table, and update its status. Demo data is stored only in this browser and resets when the page reloads.</p>
-    <div class="grid">
-      <section class="card">
-        <h2>Ticket Details</h2>
-        <label for="name">Your Name</label><input id="name" placeholder="Your name">
-        <label for="department">Department</label><select id="department"><option>IT Support</option><option>Human Resources</option><option>Finance</option><option>Facilities</option><option>Security</option></select>
-        <label for="priority">Priority</label><select id="priority"><option>Medium</option><option>Low</option><option>High</option></select>
-        <label for="title">Issue Title</label><input id="title" placeholder="Brief issue title">
-        <label for="description">Description</label><textarea id="description" placeholder="Describe the issue"></textarea>
-        <label for="ticketStatus">Ticket Status</label><select id="ticketStatus"><option>Open</option><option>In Progress</option><option>Resolved</option></select>
-        <div class="actions"><button id="create">Raise Ticket</button><button id="update" class="secondary">Update Selected</button></div>
-        <p class="status" id="message">Create a ticket to start the demo.</p>
-      </section>
-      <section class="card"><h2>Support Tickets</h2><table><thead><tr><th>Ticket No.</th><th>Title</th><th>Department</th><th>Priority</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></section>
-    </div>
-  </main>
-  <footer><div class="wrap">Academic project · <a href="https://github.com/DivyanshWatma29/SupportDesk">View source on GitHub</a></div></footer>
-  <script>
-    const tickets = [{ number: 'SD-1001', name: 'Demo Student', department: 'IT Support', priority: 'High', title: 'Unable to access email', description: 'Email login is not working.', status: 'Open' }];
-    let selected = null; const input = id => document.getElementById(id); const tell = text => input('message').textContent = text;
-    function render() { input('rows').innerHTML = tickets.map(ticket => `<tr data-number="${ticket.number}"><td>${ticket.number}</td><td>${ticket.title}</td><td>${ticket.department}</td><td>${ticket.priority}</td><td class="${ticket.status.toLowerCase().replace(' ', '-')}">${ticket.status}</td></tr>`).join(''); document.querySelectorAll('tr[data-number]').forEach(row => row.onclick = () => select(row.dataset.number)); }
-    function select(number) { const ticket = tickets.find(item => item.number === number); selected = ticket; input('name').value = ticket.name; input('department').value = ticket.department; input('priority').value = ticket.priority; input('title').value = ticket.title; input('description').value = ticket.description; input('ticketStatus').value = ticket.status; tell(`${ticket.number} selected. Change the status and click Update Selected.`); }
-    function clear() { ['name', 'title', 'description'].forEach(id => input(id).value = ''); input('department').value = 'IT Support'; input('priority').value = 'Medium'; input('ticketStatus').value = 'Open'; selected = null; }
-    input('create').onclick = () => { const name = input('name').value.trim(), title = input('title').value.trim(), description = input('description').value.trim(); if (!name || !title || !description) return tell('Name, issue title, and description are required.'); const number = `SD-${1001 + tickets.length}`; tickets.push({ number, name, title, description, department: input('department').value, priority: input('priority').value, status: 'Open' }); clear(); render(); tell(`Ticket ${number} was created. Select it from the table to update it.`); };
-    input('update').onclick = () => { if (!selected) return tell('Select a ticket from the table first.'); selected.status = input('ticketStatus').value; selected.priority = input('priority').value; render(); tell(`${selected.number} status updated to ${selected.status}.`); };
-    render();
-  </script>
+<body style="font-family: system-ui, sans-serif; padding: 2rem;">
+<h1>SupportDesk</h1>
+<p>Campus Service Desk (IT &amp; Student Support) - academic project.</p>
+<p>Opening the live demo... If nothing happens, <a href="https://supportdesk-frontend-uory.onrender.com/">open it here</a>. The first load can take 30-50 seconds.</p>
 </body>
 </html>

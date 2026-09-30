@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS departments (
   CONSTRAINT uq_department_code UNIQUE (code)
 );
 
--- 2. Users table (employees and support admins)
+-- 2. Users table (requesters such as students and staff, and support admins)
 CREATE TABLE IF NOT EXISTS users (
   id BIGINT NOT NULL AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
@@ -75,8 +75,8 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 -- Seed Initial Departments
 INSERT INTO departments (name, code) VALUES
   ('IT Support', 'IT'),
-  ('HR Operations', 'HR'),
-  ('Finance IT', 'FIN'),
-  ('Facilities', 'FAC'),
-  ('Access & Security', 'SEC')
+  ('Staff Support (HR)', 'HR'),
+  ('Fees & Finance', 'FIN'),
+  ('Campus Facilities', 'FAC'),
+  ('ID Cards & Access', 'SEC')
 ON DUPLICATE KEY UPDATE name=VALUES(name);

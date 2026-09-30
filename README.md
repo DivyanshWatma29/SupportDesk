@@ -1,18 +1,18 @@
-# SupportDesk - Support Ticket Management System
+# SupportDesk - Campus Service Desk (IT & Student Support)
 
-SupportDesk is a simple academic project for managing support tickets. Users can raise a ticket for a problem, track it using a ticket number, and staff can update the ticket status.
+SupportDesk is an academic project that models a campus service desk. Students and staff can raise a ticket for an IT or campus problem, track it with a ticket number (no login needed), and support staff manage the ticket until it is resolved.
 
-## Live Demos
+## Live Demo
 
-**[Primary Full-Stack Demo (Render)](https://supportdesk-frontend-uory.onrender.com/)**
+**[Full-Stack Demo (Render)](https://supportdesk-frontend-uory.onrender.com/)**
 
-**[Interactive Demo (GitHub Pages)](https://divyanshwatma29.github.io/SupportDesk/)**
+Demo staff login (shown on the Sign In screen): `admin` / `DemoAdmin2026!` or `agent` / `DemoAgent2026!`.
 
-The live demo is hosted on Render, so it stays available to show the project flow. It demonstrates raising, tracking, and updating tickets in the browser. The main project uses React, Spring Boot, and MySQL.
+The free host may take 30-50 seconds to wake up on the first visit. The live demo uses a temporary in-memory database (H2), so data resets when it restarts. The MySQL version runs locally using `database/schema.sql`.
 
 ## Objective
 
-The objective of this project is to create a simple help desk system where users can report issues and support staff can manage them until they are resolved.
+The objective of this project is to create a simple campus help desk where students and staff can report IT and campus issues to the right department, and support staff can manage them until they are resolved.
 
 ## Features
 
@@ -45,7 +45,7 @@ The objective of this project is to create a simple help desk system where users
 
 | Table | Purpose |
 | --- | --- |
-| `departments` | Stores department names such as IT Support and HR. |
+| `departments` | Stores the departments: IT Support, Staff Support (HR), Fees & Finance, Campus Facilities, and ID Cards & Access. |
 | `users` | Stores requester and staff information. |
 | `tickets` | Stores ticket title, description, priority, status, and dates. |
 | `audit_logs` | Stores simple history when a ticket is created or updated. |

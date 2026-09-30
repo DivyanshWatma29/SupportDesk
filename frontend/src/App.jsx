@@ -289,6 +289,7 @@ function LoginModal({ onClose, onLoginSuccess }) {
     username: DEMO_ACCOUNTS.admin.username,
     password: DEMO_ACCOUNTS.admin.password
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -362,13 +363,22 @@ function LoginModal({ onClose, onLoginSuccess }) {
           <label>
             Password
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              placeholder="Configured password"
+              placeholder="Password"
+              autoComplete="current-password"
               required
             />
           </label>
+          <button
+            type="button"
+            onClick={() => setShowPassword((value) => !value)}
+            aria-pressed={showPassword}
+            style={{ justifySelf: "start", background: "none", border: "none", padding: 0, color: "#1d4ed8", cursor: "pointer", fontSize: "0.9rem", fontWeight: 600 }}
+          >
+            {showPassword ? "Hide password" : "Show password"}
+          </button>
           <button className="primary-button" disabled={loading} style={{ marginTop: "6px" }}>
             {loading ? "Signing in..." : `Sign in as ${form.username === "admin" ? "Administrator" : "Support Agent"}`}
           </button>

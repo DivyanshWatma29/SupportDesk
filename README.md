@@ -45,7 +45,7 @@ The objective of this project is to create a simple campus help desk where stude
 
 | Table | Purpose |
 | --- | --- |
-| `departments` | Stores the departments: IT Support, Staff Support (HR), Fees & Finance, Campus Facilities, and ID Cards & Access. |
+| `departments` | Stores the departments: IT Support, Staff Support, Fees & Finance, Campus Facilities, and ID Cards & Access. |
 | `users` | Stores requester and staff information. |
 | `tickets` | Stores ticket title, description, priority, status, and dates. |
 | `audit_logs` | Stores simple history when a ticket is created or updated. |

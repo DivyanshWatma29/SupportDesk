@@ -22,7 +22,7 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
         if (departmentRepository.count() == 0) {
             Department it = departmentRepository.save(new Department("IT Support", "IT"));
-            departmentRepository.save(new Department("Staff Support (HR)", "HR"));
+            departmentRepository.save(new Department("Staff Support", "HR"));
             departmentRepository.save(new Department("Fees & Finance", "FIN"));
             departmentRepository.save(new Department("Campus Facilities", "FAC"));
             departmentRepository.save(new Department("ID Cards & Access", "SEC"));

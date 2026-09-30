@@ -17,7 +17,7 @@ const statuses = ["OPEN", "IN_PROGRESS", "RESOLVED"];
 
 const DEFAULT_DEPARTMENTS = [
   { id: 1, name: "IT Support", code: "IT" },
-  { id: 2, name: "Staff Support (HR)", code: "HR" },
+  { id: 2, name: "Staff Support", code: "HR" },
   { id: 3, name: "Fees & Finance", code: "FIN" },
   { id: 4, name: "Campus Facilities", code: "FAC" },
   { id: 5, name: "ID Cards & Access", code: "SEC" }

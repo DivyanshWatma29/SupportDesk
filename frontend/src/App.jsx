@@ -278,8 +278,17 @@ function TrackTicketTab() {
   );
 }
 
+// Public demo accounts for the live demo only. Data is temporary and resets on restart.
+const DEMO_ACCOUNTS = {
+  admin: { username: "admin", password: "DemoAdmin2026!", label: "Administrator" },
+  agent: { username: "agent", password: "DemoAgent2026!", label: "Support Agent" }
+};
+
 function LoginModal({ onClose, onLoginSuccess }) {
-  const [form, setForm] = useState({ username: "admin", password: "" });
+  const [form, setForm] = useState({
+    username: DEMO_ACCOUNTS.admin.username,
+    password: DEMO_ACCOUNTS.admin.password
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -303,11 +312,9 @@ function LoginModal({ onClose, onLoginSuccess }) {
   }
 
   function selectDemoAccount(role) {
-    if (role === "admin") {
-      setForm({ username: "admin", password: "" });
-    } else {
-      setForm({ username: "agent", password: "" });
-    }
+    const account = DEMO_ACCOUNTS[role] || DEMO_ACCOUNTS.agent;
+    setForm({ username: account.username, password: account.password });
+    setError("");
   }
 
   return (
@@ -317,9 +324,12 @@ function LoginModal({ onClose, onLoginSuccess }) {
           <h3>Staff Sign In</h3>
           <button className="close-btn" onClick={onClose}>&times;</button>
         </div>
-        <p className="muted" style={{ margin: "4px 0 16px" }}>
-          Select a role and enter the password configured for your local project.
-        </p>
+        <p className="muted" style={{ margin: "4px 0 12px" }}>Demo login for the live project. Pick a role, then press Sign In.</p>
+        <div className="message" style={{ marginBottom: "14px", fontSize: "0.9rem", lineHeight: 1.6 }}>
+          <strong>Demo accounts</strong><br />
+          Admin: <code>{DEMO_ACCOUNTS.admin.username}</code> / <code>{DEMO_ACCOUNTS.admin.password}</code><br />
+          Agent: <code>{DEMO_ACCOUNTS.agent.username}</code> / <code>{DEMO_ACCOUNTS.agent.password}</code>
+        </div>
 
         <div className="demo-roles">
           <button

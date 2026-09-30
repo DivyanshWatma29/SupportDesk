@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 -- Seed Initial Departments
 INSERT INTO departments (name, code) VALUES
   ('IT Support', 'IT'),
-  ('Staff Support (HR)', 'HR'),
+  ('Staff Support', 'HR'),
   ('Fees & Finance', 'FIN'),
   ('Campus Facilities', 'FAC'),
   ('ID Cards & Access', 'SEC')

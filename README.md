@@ -88,12 +88,3 @@ Open `http://localhost:5173` in a browser.
 ### MySQL Database
 
 For MySQL, run `database/schema.sql` in MySQL Workbench. Then set `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` before starting the backend without the `dev` profile.
-
-## Points to Explain in Viva
-
-- React is used to make the forms and dashboard interactive.
-- Spring Boot provides REST API endpoints between the frontend and database.
-- MySQL stores tickets permanently in tables.
-- Each ticket has a unique ticket number so a user can track it.
-- Ticket status shows whether work is Open, In Progress, or Resolved.
-- The audit log keeps a simple record of ticket updates.

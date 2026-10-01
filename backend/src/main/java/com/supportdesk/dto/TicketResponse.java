@@ -19,5 +19,9 @@ public record TicketResponse(
         String assignedToName,
         String adminNote,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        LocalDateTime dueAt,
+        LocalDateTime resolvedAt,
+        String slaStatus,
+        Long slaMinutesLeft
 ) {}

@@ -20,6 +20,8 @@ import com.supportdesk.repository.TicketRepository;
 import com.supportdesk.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +114,11 @@ public class TicketService {
         TicketStatus newStatus = request.status();
 
         ticket.setStatus(newStatus);
+        if (newStatus == TicketStatus.RESOLVED && oldStatus != TicketStatus.RESOLVED) {
+            ticket.setResolvedAt(LocalDateTime.now());
+        } else if (newStatus != TicketStatus.RESOLVED && oldStatus == TicketStatus.RESOLVED) {
+            ticket.setResolvedAt(null);
+        }
         if (request.adminNote() != null) {
             ticket.setAdminNote(request.adminNote().trim());
         }
@@ -155,13 +162,27 @@ public class TicketService {
             departmentCounts.put(dept.getName(), ticketRepository.countByDepartmentId(dept.getId()));
         }
 
+        LocalDateTime now = LocalDateTime.now();
+        long measured = ticketRepository.countByStatusAndResolvedAtIsNotNullAndDueAtIsNotNull(TicketStatus.RESOLVED);
+        long onTime = ticketRepository.countResolvedOnTime(TicketStatus.RESOLVED);
+        Double slaMetPercent = measured == 0 ? null : Math.round(onTime * 1000.0 / measured) / 10.0;
+
+        List<TicketRepository.ResolutionTimes> resolved = ticketRepository.findResolutionTimes(TicketStatus.RESOLVED);
+        Double avgResolutionHours = resolved.isEmpty() ? null : Math.round(
+                resolved.stream()
+                        .mapToLong(r -> Duration.between(r.getCreatedAt(), r.getResolvedAt()).toMinutes())
+                        .average().orElse(0) / 60.0 * 10) / 10.0;
+
         return new DashboardSummary(
                 ticketRepository.count(),
                 ticketRepository.countByStatus(TicketStatus.OPEN),
                 ticketRepository.countByStatus(TicketStatus.IN_PROGRESS),
                 ticketRepository.countByStatus(TicketStatus.RESOLVED),
                 ticketRepository.countByPriority(Priority.HIGH),
-                departmentCounts
+                departmentCounts,
+                ticketRepository.countByStatusNotAndDueAtBefore(TicketStatus.RESOLVED, now),
+                slaMetPercent,
+                avgResolutionHours
         );
     }
 
@@ -171,6 +192,7 @@ public class TicketService {
     }
 
     private TicketResponse toResponse(Ticket ticket) {
+        LocalDateTime now = LocalDateTime.now();
         return new TicketResponse(
                 ticket.getId(),
                 ticket.getTicketNumber(),
@@ -186,7 +208,11 @@ public class TicketService {
                 ticket.getAssignedTo() != null ? ticket.getAssignedTo().getName() : null,
                 ticket.getAdminNote(),
                 ticket.getCreatedAt(),
-                ticket.getUpdatedAt()
+                ticket.getUpdatedAt(),
+                ticket.getDueAt(),
+                ticket.getResolvedAt(),
+                SlaPolicy.status(ticket, now),
+                SlaPolicy.minutesLeft(ticket, now)
         );
     }
 

@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- 3. Tickets table (core entity referencing departments and users)
+-- due_at = created_at + SLA hours for the priority (HIGH 4h, MEDIUM 24h, LOW 72h). resolved_at is set when status becomes RESOLVED.
 CREATE TABLE IF NOT EXISTS tickets (
   id BIGINT NOT NULL AUTO_INCREMENT,
   ticket_number VARCHAR(20) NULL,
@@ -43,6 +44,8 @@ CREATE TABLE IF NOT EXISTS tickets (
   admin_note VARCHAR(500) NULL,
   created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  due_at DATETIME(6) NULL,
+  resolved_at DATETIME(6) NULL,
   PRIMARY KEY (id),
   CONSTRAINT uq_ticket_number UNIQUE (ticket_number),
   CONSTRAINT fk_ticket_department FOREIGN KEY (department_id) REFERENCES departments (id) ON DELETE RESTRICT,
@@ -52,7 +55,8 @@ CREATE TABLE IF NOT EXISTS tickets (
   INDEX idx_ticket_assigned_to (assigned_to),
   INDEX idx_ticket_status (status),
   INDEX idx_ticket_priority (priority),
-  INDEX idx_ticket_created_at (created_at)
+  INDEX idx_ticket_created_at (created_at),
+  INDEX idx_ticket_status_due_at (status, due_at)
 );
 
 -- 4. Audit Logs table (tracks lifecycle transitions and actions)

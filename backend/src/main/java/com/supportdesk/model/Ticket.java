@@ -69,11 +69,20 @@ public class Ticket {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "due_at")
+    private LocalDateTime dueAt;
+
+    @Column(name = "resolved_at")
+    private LocalDateTime resolvedAt;
+
     @PrePersist
     void onCreate() {
         LocalDateTime now = LocalDateTime.now();
         createdAt = now;
         updatedAt = now;
+        if (dueAt == null && priority != null) {
+            dueAt = now.plusHours(priority.getSlaHours());
+        }
         if (status == null) {
             status = TicketStatus.OPEN;
         }
@@ -119,4 +128,10 @@ public class Ticket {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public LocalDateTime getDueAt() { return dueAt; }
+    public void setDueAt(LocalDateTime dueAt) { this.dueAt = dueAt; }
+
+    public LocalDateTime getResolvedAt() { return resolvedAt; }
+    public void setResolvedAt(LocalDateTime resolvedAt) { this.resolvedAt = resolvedAt; }
 }

@@ -23,6 +23,8 @@ The objective of this project is to create a simple campus help desk where stude
 - Change ticket status from Open to In Progress or Resolved
 - Add a short resolution note
 - Filter tickets by department, priority, or status
+- SLA tracking: every ticket gets a due time based on its priority (High 4 hours, Medium 24 hours, Low 72 hours)
+- Staff see "Due in" and "Overdue" badges, an "Overdue only" filter, and dashboard cards for overdue tickets, SLA met %, and average resolve time
 
 ## Technologies Used
 
@@ -39,6 +41,8 @@ The objective of this project is to create a simple campus help desk where stude
 | `frontend/` | React user interface for raising, tracking, and managing tickets. |
 | `backend/` | Spring Boot API, ticket logic, and database connection. |
 | `database/schema.sql` | Creates the MySQL tables. |
+| `database/migration_add_sla.sql` | Adds the SLA columns to an existing MySQL database (run once). |
+| `database/reporting-queries.sql` | SQL reports, including overdue tickets and SLA compliance. |
 | `render.yaml` | Cloud deployment configuration. |
 
 ## Database Tables
@@ -47,7 +51,7 @@ The objective of this project is to create a simple campus help desk where stude
 | --- | --- |
 | `departments` | Stores the departments: IT Support, Staff Support, Fees & Finance, Campus Facilities, and ID Cards & Access. |
 | `users` | Stores requester and staff information. |
-| `tickets` | Stores ticket title, description, priority, status, and dates. |
+| `tickets` | Stores ticket title, description, priority, status, dates, due time (`due_at`), and resolved time (`resolved_at`). |
 | `audit_logs` | Stores simple history when a ticket is created or updated. |
 
 ## Ticket Flow
@@ -58,6 +62,19 @@ The objective of this project is to create a simple campus help desk where stude
 4. A staff member opens the dashboard and changes the status when work starts or finishes.
 5. The user can track the same ticket again to see the update.
 
+## SLA (Service Level) Targets
+
+Each ticket gets a due time when it is created. Support has this long to resolve it:
+
+| Priority | Time to resolve |
+| --- | --- |
+| High | 4 hours |
+| Medium | 24 hours |
+| Low | 72 hours |
+
+An open ticket is **On Track**, **At Risk** (the last 25% of its time is left), or **Overdue**. A resolved ticket is **Resolved on time** or **Resolved late**. Tickets created before SLA tracking have no SLA badge.
+
+The dashboard shows how many tickets are overdue, the percent resolved on time, and the average time to resolve.
 ## How to Run Locally
 
 ### Backend
@@ -88,3 +105,5 @@ Open `http://localhost:5173` in a browser.
 ### MySQL Database
 
 For MySQL, run `database/schema.sql` in MySQL Workbench. Then set `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` before starting the backend without the `dev` profile.
+
+If your MySQL database was created before SLA tracking was added, run `database/migration_add_sla.sql` once.

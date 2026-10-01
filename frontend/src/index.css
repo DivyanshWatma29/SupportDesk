@@ -56,7 +56,7 @@ textarea { min-height: 112px; resize: vertical; line-height: 1.45; }
 .admin-heading { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .user-badge-group { display: flex; align-items: center; gap: 10px; }
 .user-role-badge { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; }
-.summary-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .summary-card { padding: 17px; }
 .summary-card span { display: block; color: #64748b; font-size: 0.82rem; }
 .summary-card strong { display: block; margin-top: 7px; font-size: 1.55rem; color: #1e3a8a; }
@@ -79,6 +79,13 @@ textarea { min-height: 112px; resize: vertical; line-height: 1.45; }
 .badge.status-open { color: #1e40af; background: #dbeafe; }
 .badge.status-in_progress { color: #854d0e; background: #fef08a; }
 .badge.status-resolved { color: #166534; background: #bbf7d0; }
+.badge.sla-ok { color: #166534; background: #dcfce7; }
+.badge.sla-warn { color: #854d0e; background: #fef08a; }
+.badge.sla-bad { color: #b42318; background: #fee4e2; }
+.summary-card.alert { border-color: #fecaca; background: #fff7f7; }
+.summary-card.alert strong { color: #b42318; }
+.filters .checkbox-filter { display: flex; flex-direction: row; align-items: center; gap: 8px; min-width: 0; font-weight: 600; }
+.filters .checkbox-filter input { width: auto; margin: 0; }
 .ticket-actions { display: grid; align-content: start; gap: 11px; }
 .ticket-actions textarea { min-height: 68px; }
 .action-row { display: flex; gap: 8px; }
@@ -121,7 +128,7 @@ textarea { min-height: 112px; resize: vertical; line-height: 1.45; }
 
 @media (max-width: 850px) {
   .content-grid, .ticket-card { grid-template-columns: 1fr; }
-  .summary-grid { grid-template-columns: repeat(3, 1fr); }
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 620px) {

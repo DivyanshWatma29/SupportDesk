@@ -33,6 +33,41 @@ function formatDate(value) {
   return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
 
+// Service level targets: how long support has to resolve a ticket of each priority.
+const SLA_TARGETS = { HIGH: "4 hours", MEDIUM: "24 hours", LOW: "72 hours" };
+
+function formatDuration(totalMinutes) {
+  const minutes = Math.abs(totalMinutes ?? 0);
+  const days = Math.floor(minutes / 1440);
+  const hours = Math.floor((minutes % 1440) / 60);
+  const mins = minutes % 60;
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${mins}m`;
+  return `${mins}m`;
+}
+
+function slaBadge(ticket) {
+  switch (ticket.slaStatus) {
+    case "ON_TRACK":
+      return { className: "sla-ok", text: `Due in ${formatDuration(ticket.slaMinutesLeft)}` };
+    case "AT_RISK":
+      return { className: "sla-warn", text: `Due in ${formatDuration(ticket.slaMinutesLeft)}` };
+    case "OVERDUE":
+      return { className: "sla-bad", text: `Overdue by ${formatDuration(ticket.slaMinutesLeft)}` };
+    case "MET":
+      return { className: "sla-ok", text: "Resolved on time" };
+    case "MISSED":
+      return { className: "sla-bad", text: "Resolved late" };
+    default:
+      return null;
+  }
+}
+
+function SlaBadge({ ticket }) {
+  const sla = slaBadge(ticket);
+  if (!sla) return null;
+  return <span className={`badge ${sla.className}`}>{sla.text}</span>;
+}
 function TicketForm({ departments = DEFAULT_DEPARTMENTS }) {
   const depts = departments && departments.length > 0 ? departments : DEFAULT_DEPARTMENTS;
   const [ticket, setTicket] = useState({
@@ -238,10 +273,12 @@ function TrackTicketTab() {
             <div className="ticket-meta">
               <span className={`badge ${detail.ticket.priority.toLowerCase()}`}>{readable(detail.ticket.priority)}</span>
               <span className={`badge status-${detail.ticket.status.toLowerCase()}`}>{readable(detail.ticket.status)}</span>
+              <SlaBadge ticket={detail.ticket} />
             </div>
           </div>
 
           <div className="track-body">
+            <p className="muted">Target resolution time: {SLA_TARGETS[detail.ticket.priority]} ({readable(detail.ticket.priority)} priority)</p>
             <p><strong>Description:</strong> {detail.ticket.description}</p>
             {detail.ticket.adminNote && (
               <div className="support-note" style={{ marginTop: "12px" }}>
@@ -394,6 +431,7 @@ function DashboardView({ departments = DEFAULT_DEPARTMENTS, authUser, onSignOut 
   const [tickets, setTickets] = useState([]);
   const [summary, setSummary] = useState(null);
   const [filters, setFilters] = useState({ departmentId: "", status: "", priority: "" });
+  const [overdueOnly, setOverdueOnly] = useState(false);
   const [drafts, setDrafts] = useState({});
   const [activeTimeline, setActiveTimeline] = useState(null);
   const [error, setError] = useState("");
@@ -474,12 +512,17 @@ function DashboardView({ departments = DEFAULT_DEPARTMENTS, authUser, onSignOut 
     }
   }
 
+  const visibleTickets = overdueOnly ? tickets.filter((ticket) => ticket.slaStatus === "OVERDUE") : tickets;
+
   const cards = summary ? [
     ["Total Tickets", summary.totalTickets],
     ["Open Queue", summary.openTickets],
     ["In Progress", summary.inProgressTickets],
     ["Resolved", summary.resolvedTickets],
-    ["High Priority", summary.highPriorityTickets]
+    ["High Priority", summary.highPriorityTickets],
+    ["Overdue", summary.overdueTickets ?? 0, (summary.overdueTickets ?? 0) > 0 ? "alert" : undefined],
+    ["SLA Met", summary.slaMetPercent == null ? "-" : `${summary.slaMetPercent}%`],
+    ["Avg Resolve Time", summary.avgResolutionHours == null ? "-" : `${summary.avgResolutionHours}h`]
   ] : [];
 
   return (
@@ -501,8 +544,8 @@ function DashboardView({ departments = DEFAULT_DEPARTMENTS, authUser, onSignOut 
       {successMsg && <p className="message success">{successMsg}</p>}
 
       <div className="summary-grid">
-        {cards.map(([label, value]) => (
-          <div className="summary-card" key={label}>
+        {cards.map(([label, value, tone]) => (
+          <div className={`summary-card${tone ? ` ${tone}` : ""}`} key={label}>
             <span>{label}</span>
             <strong>{value}</strong>
           </div>
@@ -549,14 +592,23 @@ function DashboardView({ departments = DEFAULT_DEPARTMENTS, authUser, onSignOut 
           </select>
         </label>
 
+        <label className="checkbox-filter">
+
+          <input type="checkbox" checked={overdueOnly} onChange={(event) => setOverdueOnly(event.target.checked)} />
+
+          Overdue only
+
+        </label>
+
+
         <button className="secondary-button" onClick={() => loadData()}>Refresh</button>
       </div>
 
       <div className="ticket-list">
         {loading && <p className="muted">Loading tickets from database...</p>}
-        {!loading && tickets.length === 0 && <p className="empty-state">No tickets found matching these filters.</p>}
+        {!loading && visibleTickets.length === 0 && <p className="empty-state">No tickets found matching these filters.</p>}
 
-        {tickets.map((ticket) => {
+        {visibleTickets.map((ticket) => {
           const draft = drafts[ticket.id] ?? { status: ticket.status, adminNote: ticket.adminNote ?? "" };
           return (
             <article className="ticket-card" key={ticket.id}>
@@ -566,6 +618,7 @@ function DashboardView({ departments = DEFAULT_DEPARTMENTS, authUser, onSignOut 
                   <span className={`badge ${ticket.priority.toLowerCase()}`}>{readable(ticket.priority)}</span>
                   <span className="badge neutral">{ticket.departmentName}</span>
                   <span className={`badge status-${ticket.status.toLowerCase()}`}>{readable(ticket.status)}</span>
+                  <SlaBadge ticket={ticket} />
                 </div>
                 <h3>{ticket.title}</h3>
                 <p className="muted">

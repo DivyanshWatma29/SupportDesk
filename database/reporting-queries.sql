@@ -65,11 +65,49 @@ WHERE t.priority = 'HIGH'
 ORDER BY t.created_at ASC;
 
 -- 5. Mean Time to Resolution (MTTR) by Department in Hours
+-- Uses resolved_at (the moment the ticket was resolved).
 SELECT 
     d.name AS department,
-    ROUND(AVG(TIMESTAMPDIFF(MINUTE, t.created_at, t.updated_at)) / 60.0, 2) AS avg_resolution_hours,
+    ROUND(AVG(TIMESTAMPDIFF(MINUTE, t.created_at, t.resolved_at)) / 60.0, 2) AS avg_resolution_hours,
     COUNT(t.id) AS resolved_ticket_count
 FROM tickets t
 JOIN departments d ON t.department_id = d.id
-WHERE t.status = 'RESOLVED'
+WHERE t.status = 'RESOLVED' AND t.resolved_at IS NOT NULL
 GROUP BY d.id, d.name;
+
+-- 6. Overdue Tickets (SLA breached and still not resolved)
+-- Uses the index on (status, due_at).
+SELECT 
+    t.ticket_number,
+    t.title,
+    d.name AS department,
+    t.priority,
+    t.due_at,
+    TIMESTAMPDIFF(MINUTE, t.due_at, NOW()) AS minutes_overdue
+FROM tickets t
+JOIN departments d ON t.department_id = d.id
+WHERE t.status <> 'RESOLVED'
+  AND t.due_at < NOW()
+ORDER BY t.due_at ASC;
+
+-- 7. SLA Compliance by Department (percent of resolved tickets resolved by their due time)
+SELECT 
+    d.name AS department,
+    COUNT(t.id) AS resolved_tickets,
+    SUM(CASE WHEN t.resolved_at <= t.due_at THEN 1 ELSE 0 END) AS resolved_on_time,
+    ROUND(SUM(CASE WHEN t.resolved_at <= t.due_at THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(t.id), 0), 1) AS sla_met_percent
+FROM tickets t
+JOIN departments d ON t.department_id = d.id
+WHERE t.status = 'RESOLVED' AND t.resolved_at IS NOT NULL AND t.due_at IS NOT NULL
+GROUP BY d.id, d.name
+ORDER BY sla_met_percent ASC;
+
+-- 8. SLA Compliance by Priority (are HIGH tickets really fixed in 4 hours?)
+SELECT 
+    t.priority,
+    COUNT(t.id) AS resolved_tickets,
+    ROUND(SUM(CASE WHEN t.resolved_at <= t.due_at THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(t.id), 0), 1) AS sla_met_percent,
+    ROUND(AVG(TIMESTAMPDIFF(MINUTE, t.created_at, t.resolved_at)) / 60.0, 2) AS avg_resolution_hours
+FROM tickets t
+WHERE t.status = 'RESOLVED' AND t.resolved_at IS NOT NULL AND t.due_at IS NOT NULL
+GROUP BY t.priority;
